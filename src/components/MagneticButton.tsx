@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
-import { motion } from "framer-motion";
+import { useRef, type ReactNode } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 
 interface MagneticButtonProps {
   children: ReactNode;
@@ -17,25 +17,35 @@ export function MagneticButton({
   variant = "primary",
 }: MagneticButtonProps) {
   const buttonRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const rectRef = useRef<DOMRect | null>(null);
+
+  const posX = useMotionValue(0);
+  const posY = useMotionValue(0);
+  const springX = useSpring(posX, { stiffness: 350, damping: 25, mass: 0.2 });
+  const springY = useSpring(posY, { stiffness: 350, damping: 25, mass: 0.2 });
+
+  const handleMouseEnter = () => {
+    if (buttonRef.current) {
+      rectRef.current = buttonRef.current.getBoundingClientRect();
+    }
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = rectRef.current || buttonRef.current?.getBoundingClientRect();
+    if (!rect) return;
     const { clientX, clientY } = e;
-    const { left, top, width, height } = buttonRef.current?.getBoundingClientRect() || {
-      left: 0,
-      top: 0,
-      width: 0,
-      height: 0,
-    };
 
     // Calculate pull distance
-    const x = (clientX - (left + width / 2)) * 0.25;
-    const y = (clientY - (top + height / 2)) * 0.25;
-    setPosition({ x, y });
+    const x = (clientX - (rect.left + rect.width / 2)) * 0.25;
+    const y = (clientY - (rect.top + rect.height / 2)) * 0.25;
+    posX.set(x);
+    posY.set(y);
   };
 
   const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
+    posX.set(0);
+    posY.set(0);
+    rectRef.current = null;
   };
 
   const variantStyles = {
@@ -47,10 +57,10 @@ export function MagneticButton({
   return (
     <motion.div
       ref={buttonRef}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 350, damping: 25, mass: 0.2 }}
+      style={{ x: springX, y: springY }}
       whileTap={{ scale: 0.96 }}
       onClick={onClick}
       className={`inline-block cursor-pointer ${className}`}

@@ -21,13 +21,15 @@ export function AboutPlanet() {
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     camera.position.z = 6;
 
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
       powerPreference: "high-performance",
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
 
     // Planet Core Sphere
@@ -78,15 +80,40 @@ export function AboutPlanet() {
     purpleLight.position.set(-5, -2, -3);
     scene.add(purpleLight);
 
-    let animId: number;
+    let animId: number = 0;
+    let isVisible = true;
+
     const animate = () => {
+      if (!isVisible) return;
       animId = requestAnimationFrame(animate);
       planetMesh.rotation.y += 0.006;
       wireMesh.rotation.y += 0.008;
       ringMesh.rotation.z += 0.004;
       renderer.render(scene, camera);
     };
-    animate();
+
+    if (prefersReducedMotion) {
+      renderer.render(scene, camera);
+    } else {
+      animate();
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+        if (isVisible && !wasVisible && !prefersReducedMotion) {
+          if (!animId) animate();
+        } else if (!isVisible && wasVisible) {
+          if (animId) {
+            cancelAnimationFrame(animId);
+            animId = 0;
+          }
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(container);
 
     const handleResize = () => {
       if (!container) return;
@@ -96,10 +123,11 @@ export function AboutPlanet() {
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
 
     return () => {
-      cancelAnimationFrame(animId);
+      observer.disconnect();
+      if (animId) cancelAnimationFrame(animId);
       window.removeEventListener("resize", handleResize);
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);

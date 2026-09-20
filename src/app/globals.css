@@ -21,10 +21,21 @@
 }
 
 html {
-  scroll-behavior: smooth;
   background-color: #03040A;
   color: #F5F7FF;
   font-family: var(--font-sans);
+}
+
+/* Optimize off-screen rendering for long sections */
+#about,
+#skills,
+#projects,
+#journey,
+#missions,
+#achievements,
+#contact {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 900px;
 }
 
 body {

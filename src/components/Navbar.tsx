@@ -31,39 +31,55 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-
-      // Scroll spy for sections when on home page
-      if (pathname === "/") {
-        const sections = ["hero", "about", "skills", "projects", "journey", "missions", "achievements", "contact"];
-        const scrollPosition = window.scrollY + 200;
-
-        for (const section of sections) {
-          const el = document.getElementById(section);
-          if (el) {
-            const top = el.offsetTop;
-            const height = el.offsetHeight;
-            if (scrollPosition >= top && scrollPosition < top + height) {
-              setActiveSection(section);
-              break;
-            }
-          }
-        }
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          const scrolled = window.scrollY > 40;
+          setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
+          ticking = false;
+        });
       }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    // Scroll spy for sections when on home page via IntersectionObserver
+    let observer: IntersectionObserver | null = null;
+    if (pathname === "/") {
+      const sections = ["hero", "about", "skills", "projects", "journey", "missions", "achievements", "contact"];
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              setActiveSection(entry.target.id);
+            }
+          }
+        },
+        {
+          rootMargin: "-25% 0px -65% 0px",
+          threshold: 0,
+        }
+      );
+
+      sections.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer?.observe(el);
+      });
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (observer) observer.disconnect();
+    };
   }, [pathname]);
 
-  // Set active link based on pathname if not on home page
-  useEffect(() => {
-    if (pathname !== "/") {
-      const match = navItems.find((item) => pathname.startsWith(item.href));
-      if (match) setActiveSection(match.sectionId);
-    }
-  }, [pathname]);
+  const currentActiveSection =
+    pathname === "/"
+      ? activeSection
+      : navItems.find((item) => pathname.startsWith(item.href))?.sectionId || activeSection;
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, item: NavItem) => {
     if (pathname === "/") {
@@ -126,7 +142,7 @@ export function Navbar() {
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-1 lg:gap-2">
             {navItems.map((item) => {
-              const isActive = activeSection === item.sectionId;
+              const isActive = currentActiveSection === item.sectionId;
               return (
                 <Link
                   key={item.label}
@@ -187,7 +203,7 @@ export function Navbar() {
           >
             <div className="space-y-6">
               <div className="text-xs font-mono-tech text-cyan-400/80 tracking-[0.25em] uppercase">
-                // UNIVERSE NAVIGATION
+                {"// UNIVERSE NAVIGATION"}
               </div>
 
               <div className="flex flex-col space-y-4">

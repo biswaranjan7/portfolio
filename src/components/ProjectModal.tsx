@@ -99,7 +99,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             <div className="space-y-6 mb-8">
               <div>
                 <h4 className="text-xs font-mono-tech uppercase tracking-widest text-purple-300 mb-2">
-                  // MISSION OVERVIEW & ARCHITECTURE
+                  {"// MISSION OVERVIEW & ARCHITECTURE"}
                 </h4>
                 <p className="text-sm sm:text-base text-[#8B91A7] leading-relaxed">
                   {project.longDescription}

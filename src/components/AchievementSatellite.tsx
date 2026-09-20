@@ -44,7 +44,7 @@ export function AchievementSatellite() {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
             <span className="text-[11px] font-mono-tech tracking-[0.25em] text-cyan-300 uppercase">
-              // INDUSTRY EXPEDITION // OFFICIALLY VERIFIED INTERNSHIP
+              {"// INDUSTRY EXPEDITION // OFFICIALLY VERIFIED INTERNSHIP"}
             </span>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono-tech">
@@ -140,7 +140,7 @@ export function AchievementSatellite() {
         <div className="flex items-center gap-3 mb-6">
           <span className="w-2 h-2 rounded-full bg-purple-400" />
           <h3 className="text-xs font-mono-tech tracking-[0.25em] text-purple-300 uppercase">
-            // ORBITAL MISSIONS & COMPETITIVE TELEMETRY ({achievements.length} ACTIVE STATIONS)
+            {`// ORBITAL MISSIONS & COMPETITIVE TELEMETRY (${achievements.length} ACTIVE STATIONS)`}
           </h3>
         </div>
 

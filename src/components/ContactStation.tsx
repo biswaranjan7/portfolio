@@ -120,7 +120,7 @@ export function ContactStation() {
           {/* Direct Frequency Channels */}
           <div className="space-y-3">
             <div className="text-xs font-mono-tech text-[#8B91A7] tracking-widest uppercase mb-2">
-              // DIRECT BEACON CHANNELS
+              {"// DIRECT BEACON CHANNELS"}
             </div>
 
             <a
@@ -187,7 +187,7 @@ export function ContactStation() {
         <div className="lg:col-span-7">
           <div className="glass-panel p-6 sm:p-8 md:p-10 rounded-3xl border border-white/10 relative overflow-hidden">
             <div className="text-xs font-mono-tech text-cyan-400/80 tracking-widest uppercase mb-1">
-              // TELEMETRY TRANSMISSION TERMINAL
+              {"// TELEMETRY TRANSMISSION TERMINAL"}
             </div>
             <h3 className="text-2xl font-heading font-bold text-white mb-6">
               SEND DIRECT DISPATCH

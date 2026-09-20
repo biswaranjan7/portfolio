@@ -1,20 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+function subscribeLoaded() {
+  return () => {};
+}
+function getLoadedSnapshot() {
+  return !!sessionStorage.getItem("digital_universe_init");
+}
+function getServerLoadedSnapshot() {
+  return false;
+}
+
 export function LoadingScreen() {
+  const alreadyLoaded = useSyncExternalStore(subscribeLoaded, getLoadedSnapshot, getServerLoadedSnapshot);
   const [progress, setProgress] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
   const [statusText, setStatusText] = useState("INITIALIZING DIGITAL UNIVERSE...");
 
   useEffect(() => {
-    // Check if session has already initialized to avoid tedious reloading on same session
-    const hasLoaded = sessionStorage.getItem("digital_universe_init");
-    if (hasLoaded) {
-      setIsCompleted(true);
-      return;
-    }
+    if (alreadyLoaded) return;
 
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -42,11 +48,11 @@ export function LoadingScreen() {
     }, 90);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [alreadyLoaded]);
 
   return (
     <AnimatePresence>
-      {!isCompleted && (
+      {!alreadyLoaded && !isCompleted && (
         <motion.div
           key="loader"
           initial={{ opacity: 1 }}

@@ -36,7 +36,7 @@ export function CosmicBackground() {
       antialias: true,
       powerPreference: "high-performance"
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x03040a, 1);
     container.appendChild(renderer.domElement);
@@ -128,20 +128,29 @@ export function CosmicBackground() {
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
-    // Handle Window Resize
+    // Handle Window Resize with rAF throttle
+    let resizeTicking = false;
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      if (!resizeTicking) {
+        resizeTicking = true;
+        requestAnimationFrame(() => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          resizeTicking = false;
+        });
+      }
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
 
-    // Animation Loop
-    let animationId: number;
+    // Animation Loop with visibility handling
+    let animationId: number = 0;
+    let isRunning = true;
     const clock = new THREE.Clock();
 
     const animate = () => {
+      if (!isRunning) return;
       animationId = requestAnimationFrame(animate);
 
       if (!prefersReducedMotion) {
@@ -166,9 +175,29 @@ export function CosmicBackground() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    if (prefersReducedMotion) {
+      renderer.render(scene, camera);
+    } else {
+      animate();
+    }
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        isRunning = false;
+        cancelAnimationFrame(animationId);
+      } else {
+        if (!isRunning && !prefersReducedMotion) {
+          isRunning = true;
+          animationId = requestAnimationFrame(animate);
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
+      isRunning = false;
+      document.removeEventListener("visibilitychange", handleVisibility);
       cancelAnimationFrame(animationId);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);

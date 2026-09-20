@@ -1,21 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { SectionHeading } from "./SectionHeading";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectModal } from "./ProjectModal";
 import { projects, type Project } from "@/data/projects";
 
 export function ProjectsSection({ isFullPage = false }: { isFullPage?: boolean }) {
+  void isFullPage;
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [activeModalProject, setActiveModalProject] = useState<Project | null>(null);
 
   const categories = ["All", "Full Stack", "AI & Systems", "Developer Tools"];
 
-  const filteredProjects =
-    selectedCategory === "All"
-      ? projects
-      : projects.filter((p) => p.category === selectedCategory);
+  const filteredProjects = useMemo(
+    () =>
+      selectedCategory === "All"
+        ? projects
+        : projects.filter((p) => p.category === selectedCategory),
+    [selectedCategory]
+  );
 
   return (
     <section id="projects" className="relative min-h-screen py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">

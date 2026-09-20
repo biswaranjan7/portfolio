@@ -1,21 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+function subscribeWebGL() {
+  return () => {};
+}
+
+function getWebGLSnapshot() {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
+  } catch {
+    return false;
+  }
+}
+
+function getServerWebGLSnapshot() {
+  return true;
+}
 
 export function WebGLFallback() {
-  const [hasWebGL, setHasWebGL] = useState(true);
-
-  useEffect(() => {
-    try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-      if (!gl) {
-        setHasWebGL(false);
-      }
-    } catch {
-      setHasWebGL(false);
-    }
-  }, []);
+  const hasWebGL = useSyncExternalStore(subscribeWebGL, getWebGLSnapshot, getServerWebGLSnapshot);
 
   if (hasWebGL) return null;
 

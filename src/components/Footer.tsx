@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { portfolioData } from "@/data/portfolioData";
 import { ArrowUp, Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon, TwitterIcon } from "./SocialIcons";

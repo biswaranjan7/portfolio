@@ -1,31 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+
+function subscribeTouch(callback: () => void) {
+  const mql = window.matchMedia("(pointer: coarse)");
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+}
+
+function getTouchSnapshot() {
+  return (
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    window.matchMedia("(pointer: coarse)").matches ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+function getServerTouchSnapshot() {
+  return true;
+}
 
 export function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
+  const isTouchDevice = useSyncExternalStore(subscribeTouch, getTouchSnapshot, getServerTouchSnapshot);
   const [cursorVariant, setCursorVariant] = useState<"default" | "hover" | "project" | "button">("default");
   const [projectText, setProjectText] = useState("VIEW\nPROJECT ↗");
   const [isVisible, setIsVisible] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(true);
+
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+
+  // Outer ring springs
+  const ringX = useSpring(mouseX, { damping: 28, stiffness: 350, mass: 0.5 });
+  const ringY = useSpring(mouseY, { damping: 28, stiffness: 350, mass: 0.5 });
+
+  // Inner dot springs
+  const dotX = useSpring(mouseX, { damping: 40, stiffness: 800, mass: 0.1 });
+  const dotY = useSpring(mouseY, { damping: 40, stiffness: 800, mass: 0.1 });
 
   useEffect(() => {
-    // Check if touch device or prefers reduced motion
-    const touchCheck = "ontouchstart" in window || navigator.maxTouchPoints > 0 || window.matchMedia("(pointer: coarse)").matches;
-    const reducedMotionCheck = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (isTouchDevice) return;
 
-    if (touchCheck || reducedMotionCheck) {
-      setIsTouchDevice(true);
-      return;
-    }
-
-    setIsTouchDevice(false);
     document.body.classList.add("custom-cursor-active");
 
     const onMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-      if (!isVisible) setIsVisible(true);
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+      setIsVisible((prev) => (prev ? prev : true));
 
       // Detect hover target
       const target = e.target as HTMLElement | null;
@@ -35,17 +57,22 @@ export function CustomCursor() {
       const buttonEl = target.closest("button, [role='button'], [data-cursor='button']");
       const linkEl = target.closest("a, [data-cursor='link'], input, textarea");
 
+      let nextVariant: "default" | "hover" | "project" | "button" = "default";
+      let nextText = "EXPLORE\nPLANET ↗";
+
       if (projectEl) {
-        setCursorVariant("project");
+        nextVariant = "project";
         const customLabel = projectEl.getAttribute("data-cursor-text");
-        if (customLabel) setProjectText(customLabel);
-        else setProjectText("EXPLORE\nPLANET ↗");
+        if (customLabel) nextText = customLabel;
       } else if (buttonEl) {
-        setCursorVariant("button");
+        nextVariant = "button";
       } else if (linkEl) {
-        setCursorVariant("hover");
-      } else {
-        setCursorVariant("default");
+        nextVariant = "hover";
+      }
+
+      setCursorVariant((prev) => (prev !== nextVariant ? nextVariant : prev));
+      if (nextVariant === "project") {
+        setProjectText((prev) => (prev !== nextText ? nextText : prev));
       }
     };
 
@@ -57,7 +84,7 @@ export function CustomCursor() {
       setIsVisible(true);
     };
 
-    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
     document.addEventListener("mouseleave", onMouseLeave);
     document.addEventListener("mouseenter", onMouseEnter);
 
@@ -67,7 +94,7 @@ export function CustomCursor() {
       document.removeEventListener("mouseleave", onMouseLeave);
       document.removeEventListener("mouseenter", onMouseEnter);
     };
-  }, [isVisible]);
+  }, [isTouchDevice, mouseX, mouseY]);
 
   if (isTouchDevice || !isVisible) return null;
 
@@ -76,9 +103,15 @@ export function CustomCursor() {
       {/* 1. Trailing Outer Ring */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-50 rounded-full flex items-center justify-center text-center font-mono-tech select-none"
+        style={{
+          x: ringX,
+          y: ringY,
+          translateX: "-50%",
+          translateY: "-50%",
+          borderWidth: 1.5,
+          borderStyle: "solid",
+        }}
         animate={{
-          x: mousePosition.x - (cursorVariant === "project" ? 44 : cursorVariant === "button" ? 28 : cursorVariant === "hover" ? 22 : 16),
-          y: mousePosition.y - (cursorVariant === "project" ? 44 : cursorVariant === "button" ? 28 : cursorVariant === "hover" ? 22 : 16),
           width: cursorVariant === "project" ? 88 : cursorVariant === "button" ? 56 : cursorVariant === "hover" ? 44 : 32,
           height: cursorVariant === "project" ? 88 : cursorVariant === "button" ? 56 : cursorVariant === "hover" ? 44 : 32,
           backgroundColor:
@@ -105,10 +138,6 @@ export function CustomCursor() {
           stiffness: 350,
           mass: 0.5,
         }}
-        style={{
-          borderWidth: 1.5,
-          borderStyle: "solid",
-        }}
       >
         {cursorVariant === "project" && (
           <span className="text-[9px] font-bold tracking-widest text-[#F5F7FF] uppercase leading-tight">
@@ -120,9 +149,17 @@ export function CustomCursor() {
       {/* 2. Inner Glowing Dot */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-50 rounded-full"
+        style={{
+          x: dotX,
+          y: dotY,
+          translateX: "-50%",
+          translateY: "-50%",
+          width: 7,
+          height: 7,
+          backgroundColor: cursorVariant === "button" ? "#22D3EE" : "#8B5CF6",
+          boxShadow: "0 0 10px #8B5CF6, 0 0 20px #22D3EE",
+        }}
         animate={{
-          x: mousePosition.x - 3.5,
-          y: mousePosition.y - 3.5,
           scale: cursorVariant === "project" ? 0 : cursorVariant === "button" ? 1.5 : 1,
           opacity: cursorVariant === "project" ? 0 : 1,
         }}
@@ -131,12 +168,6 @@ export function CustomCursor() {
           damping: 40,
           stiffness: 800,
           mass: 0.1,
-        }}
-        style={{
-          width: 7,
-          height: 7,
-          backgroundColor: cursorVariant === "button" ? "#22D3EE" : "#8B5CF6",
-          boxShadow: "0 0 10px #8B5CF6, 0 0 20px #22D3EE",
         }}
       />
     </>

@@ -1,10 +1,20 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { ArrowDown, Sparkles, FileText, Compass } from "lucide-react";
-import { CelestialOrb } from "./CelestialOrb";
+import { Compass, FileText } from "lucide-react";
 import { MagneticButton } from "./MagneticButton";
 import { portfolioData } from "@/data/portfolioData";
+
+const CelestialOrb = dynamic(
+  () => import("./CelestialOrb").then((mod) => mod.CelestialOrb),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-[340px] h-[340px] sm:w-[460px] sm:h-[460px] md:w-[560px] md:h-[560px]" />
+    ),
+  }
+);
 
 export function Hero() {
   const firstNameLetters = portfolioData.firstName.split("");

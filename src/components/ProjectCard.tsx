@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { ArrowUpRight, Globe, Sparkles } from "lucide-react";
+import { motion, useMotionValue, useSpring, useMotionTemplate } from "framer-motion";
+import { ArrowUpRight, Globe } from "lucide-react";
 import { GithubIcon } from "./SocialIcons";
 import type { Project } from "@/data/projects";
 
@@ -14,14 +14,30 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, onSelect }: ProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-  const [glarePosition, setGlarePosition] = useState({ x: 50, y: 50 });
+  const rectRef = useRef<DOMRect | null>(null);
   const [isHovered, setIsHovered] = useState(false);
 
+  const rotX = useMotionValue(0);
+  const rotY = useMotionValue(0);
+  const glareX = useMotionValue(50);
+  const glareY = useMotionValue(50);
+
+  const springRotateX = useSpring(rotX, { stiffness: 300, damping: 25 });
+  const springRotateY = useSpring(rotY, { stiffness: 300, damping: 25 });
+
+  const glareBackground = useMotionTemplate`radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.15) 0%, transparent 60%)`;
+
+  const handleMouseEnter = () => {
+    if (cardRef.current) {
+      rectRef.current = cardRef.current.getBoundingClientRect();
+    }
+    setIsHovered(true);
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
+    const rect = rectRef.current || cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
@@ -29,48 +45,49 @@ export function ProjectCard({ project, onSelect }: ProjectCardProps) {
     const centerY = rect.height / 2;
 
     // Calculate rotation with max ±7 degrees
-    const rY = ((x - centerX) / centerX) * 7;
-    const rX = -((y - centerY) / centerY) * 7;
+    const rY = ((x - centerX) / (centerX || 1)) * 7;
+    const rX = -((y - centerY) / (centerY || 1)) * 7;
 
-    setRotateX(rX);
-    setRotateY(rY);
+    rotX.set(rX);
+    rotY.set(rY);
 
-    // Glare position percentage
-    setGlarePosition({
-      x: (x / rect.width) * 100,
-      y: (y / rect.height) * 100,
-    });
+    glareX.set((x / (rect.width || 1)) * 100);
+    glareY.set((y / (rect.height || 1)) * 100);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    setRotateX(0);
-    setRotateY(0);
+    rotX.set(0);
+    rotY.set(0);
+    rectRef.current = null;
   };
 
   return (
     <motion.div
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => onSelect(project)}
       animate={{
-        rotateX: isHovered ? rotateX : 0,
-        rotateY: isHovered ? rotateY : 0,
         scale: isHovered ? 1.02 : 1,
       }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      style={{ transformStyle: "preserve-3d", perspective: 1000 }}
+      style={{
+        transformStyle: "preserve-3d",
+        perspective: 1000,
+        rotateX: springRotateX,
+        rotateY: springRotateY,
+      }}
       data-cursor="project"
       data-cursor-text="VIEW&#10;PLANET ↗"
       className="relative rounded-3xl p-5 sm:p-6 glass-card border border-white/10 group cursor-pointer overflow-hidden flex flex-col justify-between"
     >
       {/* Moving Glare Reflection */}
-      <div
+      <motion.div
         className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-3xl"
         style={{
-          background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
+          background: glareBackground,
         }}
       />
 
@@ -102,6 +119,8 @@ export function ProjectCard({ project, onSelect }: ProjectCardProps) {
             alt={project.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            quality={85}
+            loading="lazy"
             className="object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#03040A] via-transparent to-transparent opacity-80" />

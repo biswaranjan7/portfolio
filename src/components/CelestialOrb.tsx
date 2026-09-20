@@ -20,13 +20,15 @@ export function CelestialOrb() {
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     camera.position.z = 7;
 
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
       powerPreference: "high-performance",
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
 
     // 1. Central Icosahedron Sphere with Custom Procedural Wireframe + Faces
@@ -120,22 +122,29 @@ export function CelestialOrb() {
     cyanLight.position.set(-4, -3, 3);
     scene.add(cyanLight);
 
-    // Mouse tilt variables
+    // Mouse tilt variables with cached bounding rect to prevent layout thrashing
     let mouseX = 0;
     let mouseY = 0;
     let targetRotationX = 0;
     let targetRotationY = 0;
+    let cachedRect = container.getBoundingClientRect();
+
+    const updateCachedRect = () => {
+      if (container) cachedRect = container.getBoundingClientRect();
+    };
+
+    let isVisible = true;
 
     const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      if (!isVisible || prefersReducedMotion) return;
+      const x = ((e.clientX - cachedRect.left) / (cachedRect.width || 1)) * 2 - 1;
+      const y = -(((e.clientY - cachedRect.top) / (cachedRect.height || 1)) * 2 - 1);
 
       mouseX = x;
       mouseY = y;
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
     const handleResize = () => {
       if (!container) return;
@@ -144,16 +153,18 @@ export function CelestialOrb() {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
+      updateCachedRect();
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
 
     // Animation Loop
-    let animationId: number;
+    let animationId: number = 0;
     let shockwaveScale = 1;
     const clock = new THREE.Clock();
 
     const animate = () => {
+      if (!isVisible) return;
       animationId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
@@ -188,10 +199,37 @@ export function CelestialOrb() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    // Render single frame for reduced motion or start loop
+    if (prefersReducedMotion) {
+      renderer.render(scene, camera);
+    } else {
+      animate();
+    }
+
+    // Viewport IntersectionObserver to pause rendering when offscreen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+        if (isVisible && !wasVisible && !prefersReducedMotion) {
+          updateCachedRect();
+          if (!animationId) {
+            animate();
+          }
+        } else if (!isVisible && wasVisible) {
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = 0;
+          }
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(container);
 
     return () => {
-      cancelAnimationFrame(animationId);
+      observer.disconnect();
+      if (animationId) cancelAnimationFrame(animationId);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
       if (container.contains(renderer.domElement)) {

@@ -1,22 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "./SectionHeading";
 import { constellationSkills, skillCategories, type SkillNode } from "@/data/skills";
-import { Sparkles, Layers, Cpu, Compass, CheckCircle2 } from "lucide-react";
+import { Layers, CheckCircle2 } from "lucide-react";
 
 export function SkillConstellation() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [hoveredSkill, setHoveredSkill] = useState<SkillNode | null>(constellationSkills[0]);
   const [activeSkillId, setActiveSkillId] = useState<string>("ts");
 
-  const filteredSkills =
-    selectedCategory === "All"
-      ? constellationSkills
-      : constellationSkills.filter((s) => s.category === selectedCategory);
+  const filteredSkills = useMemo(
+    () =>
+      selectedCategory === "All"
+        ? constellationSkills
+        : constellationSkills.filter((s) => s.category === selectedCategory),
+    [selectedCategory]
+  );
 
-  const activeSkill = constellationSkills.find((s) => s.id === activeSkillId) || constellationSkills[0];
+  const activeSkill = useMemo(
+    () => constellationSkills.find((s) => s.id === activeSkillId) || constellationSkills[0],
+    [activeSkillId]
+  );
 
   return (
     <section id="skills" className="relative min-h-screen py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -72,7 +78,6 @@ export function SkillConstellation() {
           >
             {/* Draw Constellation Connection Lines */}
             {constellationSkills.map((skill) => {
-              const isSourceActive = skill.id === activeSkillId;
               return skill.connections.map((targetId) => {
                 const targetSkill = constellationSkills.find((s) => s.id === targetId);
                 if (!targetSkill) return null;

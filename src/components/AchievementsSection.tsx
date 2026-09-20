@@ -161,7 +161,7 @@ export function AchievementsSection() {
                   <span>VERIFIED RECORD</span>
                 </div>
                 <span className="text-[10px] uppercase text-[#8B91A7]/70">
-                  // B.TECH CSE
+                  {"// B.TECH CSE"}
                 </span>
               </div>
             </motion.div>

@@ -2,13 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CosmicBackground } from "@/components/CosmicBackground";
-import { WebGLFallback } from "@/components/WebGLFallback";
 import { CustomCursor } from "@/components/CustomCursor";
+import { WebGLFallback } from "@/components/WebGLFallback";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SmoothScroll } from "@/components/SmoothScroll";
-import { portfolioData } from "@/data/portfolioData";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -92,7 +91,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark scroll-smooth`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}
     >
       <body className="bg-[#03040A] text-[#F5F7FF] min-h-screen relative font-sans antialiased overflow-x-hidden selection:bg-purple-600/30 selection:text-white">
         <LoadingScreen />
