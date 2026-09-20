@@ -6,6 +6,7 @@ import { SkillConstellation } from "@/components/SkillConstellation";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { JourneyTimeline } from "@/components/JourneyTimeline";
 import { AchievementSatellite } from "@/components/AchievementSatellite";
+import { AchievementsSection } from "@/components/AchievementsSection";
 import { ContactStation } from "@/components/ContactStation";
 import { PageTransition } from "@/components/PageTransition";
 
@@ -58,10 +59,18 @@ export default function HomePage() {
 
         {/* Section Divider Telemetry */}
         <div className="w-full flex items-center justify-center pointer-events-none opacity-40">
+          <div className="h-[1px] w-48 bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+        </div>
+
+        {/* Sector 06: Academic & Co-Curricular Achievements */}
+        <AchievementsSection />
+
+        {/* Section Divider Telemetry */}
+        <div className="w-full flex items-center justify-center pointer-events-none opacity-40">
           <div className="h-[1px] w-48 bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
         </div>
 
-        {/* Sector 06: Transmission Communication Station */}
+        {/* Sector 07: Transmission Communication Station */}
         <ContactStation />
       </div>
     </PageTransition>

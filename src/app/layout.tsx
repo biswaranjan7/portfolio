@@ -29,11 +29,11 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Biswaranjan Muduli — CSE Student & Developer",
+  title: "Biswa Ranjan Muduli — CSE Student & Developer",
   description:
-    "Portfolio of Biswaranjan Muduli, a Computer Science Engineering student and developer building digital experiences, distributed platforms, and exploring technology.",
+    "Portfolio of Biswa Ranjan Muduli, a Computer Science Engineering student and developer building digital experiences, distributed platforms, and exploring technology.",
   keywords: [
-    "Biswaranjan Muduli",
+    "Biswa Ranjan Muduli",
     "Computer Science Engineering",
     "Full Stack Developer",
     "Next.js",
@@ -42,32 +42,32 @@ export const metadata: Metadata = {
     "Portfolio",
     "Software Engineer",
   ],
-  authors: [{ name: "Biswaranjan Muduli", url: "https://github.com/biswaranjanmuduli" }],
-  creator: "Biswaranjan Muduli",
+  authors: [{ name: "Biswa Ranjan Muduli", url: "https://github.com/biswaranjan7" }],
+  creator: "Biswa Ranjan Muduli",
   metadataBase: new URL("https://biswaranjanmuduli.dev"),
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://biswaranjanmuduli.dev",
-    title: "Biswaranjan Muduli — CSE Student & Developer",
+    title: "Biswa Ranjan Muduli — CSE Student & Developer",
     description:
-      "Digital Universe Portfolio of Biswaranjan Muduli, featuring interactive 3D environments, full-stack systems, and engineering telemetry.",
-    siteName: "Biswaranjan Muduli Portfolio",
+      "Digital Universe Portfolio of Biswa Ranjan Muduli, featuring interactive 3D environments, full-stack systems, and engineering telemetry.",
+    siteName: "Biswa Ranjan Muduli Portfolio",
     images: [
       {
         url: "/projects/project-1.webp",
         width: 1200,
         height: 630,
-        alt: "Biswaranjan Muduli — Digital Universe Portfolio",
+        alt: "Biswa Ranjan Muduli — Digital Universe Portfolio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Biswaranjan Muduli — CSE Student & Developer",
+    title: "Biswa Ranjan Muduli — CSE Student & Developer",
     description:
-      "Digital Universe Portfolio of Biswaranjan Muduli, featuring interactive 3D environments, full-stack systems, and engineering telemetry.",
-    creator: "@biswaranjan_dev",
+      "Digital Universe Portfolio of Biswa Ranjan Muduli, featuring interactive 3D environments, full-stack systems, and engineering telemetry.",
+    creator: "@Biswaranjan21_",
     images: ["/projects/project-1.webp"],
   },
   icons: {

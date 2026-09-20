@@ -24,12 +24,30 @@ export function ContactStation() {
     setErrorMessage("");
     setTransmissionStatus("connecting");
 
-    // Phase 1: Connecting (600ms)
-    setTimeout(() => {
+    try {
+      // Phase 1: Initiating frequency lock (500ms)
+      await new Promise((resolve) => setTimeout(resolve, 500));
       setTransmissionStatus("transmitting");
 
-      // Phase 2: Transmitting (900ms)
-      setTimeout(() => {
+      const response = await fetch(`https://formsubmit.co/ajax/${portfolioData.email}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          _subject: `🛰️ Orbital Transmission from ${formData.name} (Portfolio)`,
+          _captcha: "false",
+          _template: "table",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && (result.success === "true" || result.success === true || result.message)) {
         setTransmissionStatus("sent");
 
         // Cosmic celebratory particle burst
@@ -44,9 +62,21 @@ export function ContactStation() {
         setTimeout(() => {
           setFormData({ name: "", email: "", message: "" });
           setTransmissionStatus("idle");
-        }, 5000);
-      }, 900);
-    }, 600);
+        }, 6000);
+      } else {
+        throw new Error(result?.message || "Failed to deliver transmission");
+      }
+    } catch (err: unknown) {
+      console.error("Transmission error:", err);
+      // Fallback: Open mail client so no message is ever lost
+      window.location.href = `mailto:${portfolioData.email}?subject=Portfolio%20Transmission%20from%20${encodeURIComponent(
+        formData.name
+      )}&body=${encodeURIComponent(formData.message)}%0A%0AFrom:%20${encodeURIComponent(
+        formData.email
+      )}`;
+      setErrorMessage("Direct mail protocol initiated in your email client.");
+      setTransmissionStatus("idle");
+    }
   };
 
   return (
@@ -132,7 +162,7 @@ export function ContactStation() {
             </a>
 
             <a
-              href={portfolioData.github}
+              href={portfolioData.githubRepositories || portfolioData.github}
               target="_blank"
               rel="noopener noreferrer"
               className="glass-card p-4 rounded-2xl border border-white/10 flex items-center justify-between group hover:border-white/30 transition-colors"
@@ -144,7 +174,7 @@ export function ContactStation() {
                 <div>
                   <div className="text-xs text-[#8B91A7] font-mono-tech">SOURCE REPOSITORIES</div>
                   <div className="text-sm font-heading font-medium text-white group-hover:text-cyan-300">
-                    github.com/biswaranjanmuduli
+                    github.com/biswaranjan7
                   </div>
                 </div>
               </div>
@@ -173,10 +203,10 @@ export function ContactStation() {
                   <CheckCircle2 className="w-8 h-8 text-cyan-400" />
                 </div>
                 <h4 className="text-xl font-heading font-bold text-white">
-                  MESSAGE SENT ✓ // DISPATCH CONFIRMED
+                  TRANSMISSION DISPATCHED ✓
                 </h4>
                 <p className="text-xs sm:text-sm text-[#8B91A7] max-w-md">
-                  Your transmission has been logged into the communication station buffer. Biswaranjan will reply within 24 standard solar hours.
+                  Your message has been routed directly to <span className="text-white font-mono-tech">{portfolioData.email}</span>. Biswa Ranjan will reply within 24 standard solar hours.
                 </p>
               </motion.div>
             ) : (

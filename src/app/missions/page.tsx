@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { SkillConstellation } from "@/components/SkillConstellation";
+import { AchievementSatellite } from "@/components/AchievementSatellite";
 import { PageTransition } from "@/components/PageTransition";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Constellation Matrix — Biswa Ranjan Muduli",
-  description: "Interactive skill constellation and technical proficiency matrix of Biswa Ranjan Muduli.",
+  title: "Completed Missions — Biswa Ranjan Muduli",
+  description: "Orbital mission achievements, accredited AI internship, and competitive coding milestones of Biswa Ranjan Muduli.",
 };
 
-export default function SkillsPage() {
+export default function MissionsPage() {
   return (
     <PageTransition>
       <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -21,7 +21,7 @@ export default function SkillsPage() {
             <span>RETURN TO UNIVERSE ZENITH</span>
           </Link>
         </div>
-        <SkillConstellation />
+        <AchievementSatellite />
       </div>
     </PageTransition>
   );

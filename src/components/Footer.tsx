@@ -65,10 +65,10 @@ export function Footer() {
             href={portfolioData.twitter}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-xs font-mono-tech text-[#8B91A7] hover:text-blue-400 transition-colors"
+            className="flex items-center gap-2 text-xs font-mono-tech text-[#8B91A7] hover:text-white transition-colors"
           >
-            <TwitterIcon className="w-4 h-4" />
-            <span>Twitter</span>
+            <TwitterIcon className="w-3.5 h-3.5" />
+            <span>X (Twitter)</span>
           </a>
         </div>
 
@@ -79,7 +79,7 @@ export function Footer() {
 
         {/* Copyright & System Status */}
         <div className="w-full pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono-tech text-[#8B91A7]/70">
-          <div>© 2026 Biswaranjan Muduli. All rights reserved.</div>
+          <div>© 2026 Biswa Ranjan Muduli. All rights reserved.</div>
           <div>BUILT WITH NEXT.JS • THREE.JS • TAILWIND</div>
         </div>
       </div>

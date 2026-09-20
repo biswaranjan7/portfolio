@@ -2,6 +2,7 @@ export interface PersonalInfo {
   name: string;
   firstName: string;
   lastName: string;
+  avatarUrl: string;
   role: string;
   subtitle: string;
   tagline: string;
@@ -10,6 +11,7 @@ export interface PersonalInfo {
   status: string;
   email: string;
   github: string;
+  githubRepositories?: string;
   linkedin: string;
   twitter: string;
   resumeUrl: string;
@@ -22,19 +24,21 @@ export interface PersonalInfo {
 }
 
 export const portfolioData: PersonalInfo = {
-  name: "Biswaranjan Muduli",
-  firstName: "BISWARANJAN",
+  name: "Biswa Ranjan Muduli",
+  firstName: "BISWA RANJAN",
   lastName: "MUDULI",
+  avatarUrl: "/profile.jpg",
   role: "Computer Science Engineering Student & Developer",
   subtitle: "CSE STUDENT • DEVELOPER",
   tagline: "I build digital experiences, experiment with technology, and turn ideas into products.",
   bio: "Passionate about modern distributed web architectures, high-performance user interfaces, and systems engineering. Constantly exploring the boundaries of software, 3D interaction, and artificial intelligence.",
   location: "Bhubaneswar, India",
   status: "ONLINE // OPEN TO OPPORTUNITIES",
-  email: "biswaranjanmuduli.dev@gmail.com",
-  github: "https://github.com/biswaranjanmuduli",
-  linkedin: "https://linkedin.com/in/biswaranjanmuduli",
-  twitter: "https://twitter.com/biswaranjan_dev",
+  email: "mudulibiswaranjan21@gmail.com",
+  github: "https://github.com/biswaranjan7",
+  githubRepositories: "https://github.com/biswaranjan7?tab=repositories",
+  linkedin: "https://www.linkedin.com/in/biswaranjanmuduli",
+  twitter: "https://x.com/Biswaranjan21_",
   resumeUrl: "/resume.pdf",
   aboutText: {
     lead: "Navigating the intersection of computational engineering and modern interface craftsmanship.",

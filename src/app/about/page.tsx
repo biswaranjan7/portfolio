@@ -4,8 +4,8 @@ import { PageTransition } from "@/components/PageTransition";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "About Sector — Biswaranjan Muduli",
-  description: "Explore the core background, engineering philosophy, and academic trajectory of Biswaranjan Muduli.",
+  title: "About Sector — Biswa Ranjan Muduli",
+  description: "Explore the core background, engineering philosophy, and academic trajectory of Biswa Ranjan Muduli.",
 };
 
 export default function AboutPage() {

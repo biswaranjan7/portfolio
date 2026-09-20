@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight, Terminal } from "lucide-react";
@@ -18,7 +19,8 @@ const navItems: NavItem[] = [
   { label: "Skills", href: "/skills", sectionId: "skills" },
   { label: "Projects", href: "/projects", sectionId: "projects" },
   { label: "Journey", href: "/experience", sectionId: "journey" },
-  { label: "Missions", href: "/achievements", sectionId: "achievements" },
+  { label: "Missions", href: "/missions", sectionId: "missions" },
+  { label: "Achievements", href: "/achievements", sectionId: "achievements" },
   { label: "Contact", href: "/contact", sectionId: "contact" },
 ];
 
@@ -34,7 +36,7 @@ export function Navbar() {
 
       // Scroll spy for sections when on home page
       if (pathname === "/") {
-        const sections = ["hero", "about", "skills", "projects", "journey", "achievements", "contact"];
+        const sections = ["hero", "about", "skills", "projects", "journey", "missions", "achievements", "contact"];
         const scrollPosition = window.scrollY + 200;
 
         for (const section of sections) {
@@ -101,12 +103,19 @@ export function Navbar() {
               }
             }}
           >
-            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center font-heading font-black text-xs text-white group-hover:border-purple-400/60 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] transition-all">
-              BM
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-white/20 group-hover:border-purple-400/60 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] transition-all shrink-0 bg-white/10 ring-1 ring-cyan-400/20">
+              <Image
+                src={portfolioData.avatarUrl}
+                alt={portfolioData.name}
+                width={32}
+                height={32}
+                className="w-full h-full object-cover object-top"
+                priority
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-heading font-bold text-sm tracking-tight text-white group-hover:text-purple-300 transition-colors">
-                BISWARANJAN
+                BISWA RANJAN
               </span>
               <span className="font-mono-tech text-[9px] text-[#8B91A7] tracking-widest uppercase hidden sm:inline-block">
                 SYSTEM ONLINE

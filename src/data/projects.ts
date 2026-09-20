@@ -30,7 +30,7 @@ export const projects: Project[] = [
     image: "/projects/project-1.webp",
     gradient: "from-purple-600/30 via-indigo-600/20 to-blue-600/30",
     glowColor: "rgba(139, 92, 246, 0.4)",
-    github: "https://github.com/biswaranjanmuduli/orbit-flow",
+    github: "https://github.com/biswaranjan7/orbit-flow",
     live: "https://orbit-flow-demo.vercel.app",
     features: [
       "CRDT-based conflict-free multiplayer canvas & state sync",
@@ -57,7 +57,7 @@ export const projects: Project[] = [
     image: "/projects/project-2.webp",
     gradient: "from-blue-600/30 via-cyan-600/20 to-teal-600/30",
     glowColor: "rgba(34, 211, 238, 0.4)",
-    github: "https://github.com/biswaranjanmuduli/neurosphere-ai",
+    github: "https://github.com/biswaranjan7/neurosphere-ai",
     live: "https://neurosphere-ai.vercel.app",
     features: [
       "Hardware-accelerated 3D force-directed graph physics simulation",
@@ -84,7 +84,7 @@ export const projects: Project[] = [
     image: "/projects/project-3.webp",
     gradient: "from-violet-600/30 via-purple-600/20 to-pink-600/30",
     glowColor: "rgba(168, 85, 247, 0.4)",
-    github: "https://github.com/biswaranjanmuduli/vortex-profiler",
+    github: "https://github.com/biswaranjan7/vortex-profiler",
     live: "https://vortex-profiler.vercel.app",
     features: [
       "Parallel AST parsing across multi-threaded worker pools",
@@ -111,7 +111,7 @@ export const projects: Project[] = [
     image: "/projects/project-4.webp",
     gradient: "from-cyan-600/30 via-blue-600/20 to-indigo-600/30",
     glowColor: "rgba(59, 130, 246, 0.4)",
-    github: "https://github.com/biswaranjanmuduli/aether-store",
+    github: "https://github.com/biswaranjan7/aether-store",
     live: "https://aether-store.vercel.app",
     features: [
       "Instant speculative prefetching of product routes on hover",

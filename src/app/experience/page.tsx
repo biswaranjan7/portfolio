@@ -4,8 +4,8 @@ import { PageTransition } from "@/components/PageTransition";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Journey Trajectory — Biswaranjan Muduli",
-  description: "Spacecraft flightpath and chronological milestones of Biswaranjan Muduli.",
+  title: "Journey Trajectory — Biswa Ranjan Muduli",
+  description: "Spacecraft flightpath and chronological milestones of Biswa Ranjan Muduli.",
 };
 
 export default function ExperiencePage() {

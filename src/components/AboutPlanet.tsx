@@ -180,7 +180,7 @@ export function AboutPlanet() {
                 B.Tech in CSE
               </div>
               <div className="text-xs text-[#8B91A7] leading-snug">
-                Computer Science & Engineering (Class of 2026)
+                GCE Kalahandi • Class of 2028
               </div>
             </motion.div>
 

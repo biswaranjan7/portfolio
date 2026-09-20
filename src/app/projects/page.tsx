@@ -4,8 +4,8 @@ import { PageTransition } from "@/components/PageTransition";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Planetary Projects — Biswaranjan Muduli",
-  description: "Explore the planetary system of distributed software, AI knowledge tools, and web platforms built by Biswaranjan Muduli.",
+  title: "Planetary Projects — Biswa Ranjan Muduli",
+  description: "Explore the planetary system of distributed software, AI knowledge tools, and web platforms built by Biswa Ranjan Muduli.",
 };
 
 export default function ProjectsPage() {

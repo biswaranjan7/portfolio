@@ -4,8 +4,8 @@ import { PageTransition } from "@/components/PageTransition";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Contact Station — Biswaranjan Muduli",
-  description: "Initiate direct communication or dispatch a telemetry transmission to Biswaranjan Muduli.",
+  title: "Contact Station — Biswa Ranjan Muduli",
+  description: "Initiate direct communication or dispatch a telemetry transmission to Biswa Ranjan Muduli.",
 };
 
 export default function ContactPage() {
