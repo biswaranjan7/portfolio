@@ -1,58 +1,83 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
-function subscribeLoaded() {
-  return () => {};
-}
-function getLoadedSnapshot() {
-  return !!sessionStorage.getItem("digital_universe_init");
-}
-function getServerLoadedSnapshot() {
-  return false;
-}
-
 export function LoadingScreen() {
-  const alreadyLoaded = useSyncExternalStore(subscribeLoaded, getLoadedSnapshot, getServerLoadedSnapshot);
   const [progress, setProgress] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
   const [statusText, setStatusText] = useState("INITIALIZING DIGITAL UNIVERSE...");
 
   useEffect(() => {
-    if (alreadyLoaded) return;
+    // Clear any stale legacy session flag to prevent interference
+    try {
+      sessionStorage.removeItem("digital_universe_init");
+    } catch {
+      // Ignore in restricted storage environments
+    }
 
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setStatusText("SYSTEM READY // ACCESS GRANTED");
-          setTimeout(() => {
-            setIsCompleted(true);
-            sessionStorage.setItem("digital_universe_init", "true");
-          }, 450);
-          return 100;
-        }
+    let animationFrameId: number | null = null;
+    let completionTimeoutId: NodeJS.Timeout | null = null;
+    let isCancelled = false;
 
-        const step = Math.floor(Math.random() * 18) + 8;
-        const next = Math.min(prev + step, 100);
+    const DURATION = 1300; // Total ms to progress from 0% to 100%
+    const COMPLETION_DELAY = 450; // Delay at 100% before starting fade-out
+    const startTime = performance.now();
+    let lastReportedProgress = 0;
 
-        if (next > 35 && next < 70) {
+    function step(currentTime: number) {
+      if (isCancelled) return;
+
+      const elapsed = currentTime - startTime;
+      const t = Math.min(Math.max(elapsed / DURATION, 0), 1);
+
+      // Smooth ease-out cubic curve: fast start, smooth deceleration toward 100
+      const eased = 1 - Math.pow(1 - t, 2.4);
+      const currentProgress = Math.min(100, Math.floor(eased * 100));
+
+      if (currentProgress !== lastReportedProgress) {
+        lastReportedProgress = currentProgress;
+        setProgress(currentProgress);
+
+        if (currentProgress > 35 && currentProgress < 70) {
           setStatusText("LOADING CELESTIAL COORDINATES...");
-        } else if (next >= 70 && next < 100) {
+        } else if (currentProgress >= 70 && currentProgress < 100) {
           setStatusText("STABILIZING QUANTUM TELEMETRY...");
         }
+      }
 
-        return next;
-      });
-    }, 90);
+      if (t < 1) {
+        animationFrameId = requestAnimationFrame(step);
+      } else {
+        // Guaranteed exact 100% terminal state
+        setProgress(100);
+        setStatusText("SYSTEM READY // ACCESS GRANTED");
 
-    return () => clearInterval(interval);
-  }, [alreadyLoaded]);
+        completionTimeoutId = setTimeout(() => {
+          if (!isCancelled) {
+            setIsCompleted(true);
+          }
+        }, COMPLETION_DELAY);
+      }
+    }
+
+    animationFrameId = requestAnimationFrame(step);
+
+    return () => {
+      isCancelled = true;
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      if (completionTimeoutId !== null) {
+        clearTimeout(completionTimeoutId);
+      }
+    };
+  }, []);
 
   return (
     <AnimatePresence>
-      {!alreadyLoaded && !isCompleted && (
+      {!isCompleted && (
         <motion.div
           key="loader"
           initial={{ opacity: 1 }}
@@ -63,14 +88,21 @@ export function LoadingScreen() {
           <div className="absolute w-96 h-96 rounded-full bg-purple-600/10 blur-[120px] pointer-events-none" />
 
           <div className="relative z-10 flex flex-col items-center max-w-md w-full text-center">
-            {/* Logo Monogram */}
+            {/* User Profile Avatar */}
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="w-14 h-14 mb-6 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center font-heading font-black text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-br from-white via-indigo-200 to-cyan-400 shadow-[0_0_30px_rgba(139,92,246,0.2)]"
+              className="relative w-16 h-16 mb-6 rounded-2xl border border-white/20 bg-white/5 overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.3)] ring-1 ring-cyan-400/20 flex items-center justify-center"
             >
-              BM
+              <Image
+                src="/profile.jpg"
+                alt="Biswa Ranjan Muduli"
+                fill
+                sizes="64px"
+                className="object-cover object-[50%_18%]"
+                priority
+              />
             </motion.div>
 
             {/* Header */}
